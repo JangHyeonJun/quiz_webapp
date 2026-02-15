@@ -50,14 +50,10 @@
 
     <div class="row">
       <button class="primary" id="nextBtn">다음 문제</button>
+      <button class="ghost" id="showAnswerBtn">정답보기</button>
       <button class="ghost" id="restartBtn">타이머만 리셋</button>
     </div>
 
-    <div class="card" style="margin-top:12px;">
-      <div class="muted">
-        아이폰: 사파리 공유 버튼 → <b>홈 화면에 추가</b> 하면 앱처럼 사용 가능.
-      </div>
-    </div>
   </div>
 
 <script>
@@ -294,6 +290,11 @@
     startTimer();
   }
 
+  function toggleAnswer() {
+    showAnswer = !showAnswer; // 보기/숨기기 토글
+    render();
+  }
+
   function render() {
     $("timer").textContent = remaining;
     $("bar").style.width = (remaining / TOTAL * 100) + "%";
@@ -301,6 +302,7 @@
     const item = bank[currentIndex] || { q: "문제가 없습니다.", a: "" };
     $("question").textContent = item.q;
 
+    $("showAnswerBtn").textContent = showAnswer ? "정답숨기기" : "정답보기";
     $("answerBox").style.display = showAnswer ? "block" : "none";
     $("hint").style.display = showAnswer ? "none" : "block";
     $("answer").textContent = item.a;
@@ -315,6 +317,7 @@
 
   $("nextBtn").addEventListener("click", drawNext);
   $("restartBtn").addEventListener("click", restartTimerOnly);
+  $("showAnswerBtn").addEventListener("click", toggleAnswer);
 
   // 초기 시작
   resetDeck(true);
@@ -323,3 +326,4 @@
 </script>
 </body>
 </html>
+
