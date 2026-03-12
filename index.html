@@ -340,6 +340,7 @@ render();
     $("cycleInfo").textContent = total
       ? `이번 바퀴 남은 문제: ${left} / ${total}`
       : "";
+  }
 
   <div style="margin-top:12px;">
   <div class="muted" style="margin-bottom:6px;">정답 표시 후 자동 다음(초)</div>
@@ -353,8 +354,7 @@ render();
       <input type="radio" name="autoNext" value="30"> 30초
     </label>
   </div>
-  }
-
+  
   $("nextBtn").addEventListener("click", drawNext);
   $("restartBtn").addEventListener("click", restartTimerOnly);
   $("showAnswerBtn").addEventListener("click", toggleAnswer);
@@ -366,5 +366,6 @@ render();
 </script>
 </body>
 </html>
+
 
 
