@@ -14,13 +14,12 @@
     .card { background:#fff; border-radius: 14px; padding: 16px; box-shadow: 0 6px 20px rgba(0,0,0,.06); margin-bottom: 12px; }
     .timer-wrap { position: relative; }
     .timer { font-size: 42px; font-weight: 800; text-align:center; margin: 6px 0 12px; }
-    .timer-reset { position: absolute; top: 0; right: 0; width: auto; padding: 6px 10px; font-size: 20px; border-radius: 10px; background: #f0f1f3; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .timer-reset { position: absolute; top: 0; right: 0; width: auto; padding: 6px 12px; font-size: 12px; font-weight: 700; color: #667; border-radius: 10px; background: #f0f1f3; border: none; cursor: pointer; }
     .timer-reset:hover { background: #e0e2e6; }
-    .timer-reset span { font-size: 12px; font-weight: 700; color: #667; }
-    .answer-wrap { position: relative; }
-    .answer-toggle { position: absolute; top: 0; right: 0; width: auto; padding: 6px 10px; font-size: 18px; border-radius: 10px; background: #f0f1f3; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .answer-wrap { position: relative; padding-top: 0; }
+    .answer-header { display: flex; justify-content: space-between; align-items: center; }
+    .answer-toggle { width: auto; padding: 4px 12px; font-size: 12px; font-weight: 700; color: #667; border-radius: 10px; background: #f0f1f3; border: none; cursor: pointer; margin: 0; flex-shrink: 0; }
     .answer-toggle:hover { background: #e0e2e6; }
-    .answer-toggle span { font-size: 12px; font-weight: 700; color: #667; }
     .bar { height: 10px; background:#e9edf2; border-radius: 999px; overflow:hidden; }
     .bar > div { height: 100%; width: 100%; background:#111; transition: width .15s linear; }
     h1 { font-size: 18px; margin: 0 0 12px; }
@@ -54,7 +53,7 @@
       <h1>공부 퀴즈 (60초 / 1문제)</h1>
       <div class="timer-wrap">
         <div class="timer" id="timer">60</div>
-        <button class="timer-reset" id="restartBtn" title="타이머 리셋">&#x1F504;<span>리셋</span></button>
+        <button class="timer-reset" id="restartBtn" title="타이머 리셋">리셋</button>
       </div>
       <div class="bar"><div id="bar"></div></div>
       <div class="muted" id="cycleInfo" style="margin-top:10px;"></div>
@@ -65,9 +64,11 @@
       <div class="q" id="question">로딩중…</div>
 
       <div class="answer-wrap" style="margin-top:14px;">
-        <div class="label">정답</div>
-        <button class="answer-toggle" id="showAnswerBtn" title="정답보기">&#x1F441;<span id="answerToggleLabel">보기</span></button>
-        <div id="answerBox" style="display:none; margin-top:4px;">
+        <div class="answer-header">
+          <div class="label" style="margin:0;">정답</div>
+          <button class="answer-toggle" id="showAnswerBtn" title="정답보기"><span id="answerToggleLabel">보기</span></button>
+        </div>
+        <div id="answerBox" style="display:none; margin-top:8px;">
           <div class="a" id="answer"></div>
         </div>
       </div>
