@@ -20,7 +20,16 @@
     button { width:100%; padding: 14px 14px; border-radius: 12px; border:0; font-size: 16px; font-weight: 800; }
     .primary { background:#111; color:#fff; }
     .ghost { background:#fff; color:#111; border:1px solid #d8dde6; margin-top: 10px; }
+    .danger { background:#fff; color:#e53e3e; border:1px solid #e53e3e; margin-top: 10px; }
+    .danger.active { background:#e53e3e; color:#fff; }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .wrong-list { max-height: 400px; overflow-y: auto; }
+    .wrong-item { padding: 12px; border-bottom: 1px solid #e9edf2; cursor: pointer; }
+    .wrong-item:hover { background: #f0f1f3; }
+    .wrong-item .wrong-q { font-weight: 700; margin-bottom: 4px; }
+    .wrong-item .wrong-a { font-size: 14px; color: #667; white-space: pre-wrap; display: none; }
+    .wrong-item.open .wrong-a { display: block; margin-top: 6px; }
+    .badge { display: inline-block; background: #e53e3e; color: #fff; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 2px 8px; margin-left: 6px; }
     .row { display:flex; gap:10px; }
     .row button { width: 50%; }
     @media (max-width: 480px) { .row { flex-direction: column; } .row button { width:100%; } }
@@ -55,7 +64,20 @@
     </div>
     <div class="row">
       <button class="ghost" id="showAnswerBtn">정답보기</button>
+      <button class="danger" id="markWrongBtn">모르는 문제</button>
+    </div>
+    <div class="row">
       <button class="ghost" id="restartBtn">타이머만 리셋</button>
+      <button class="ghost" id="showWrongListBtn">모르는 문제 목록</button>
+    </div>
+
+    <div class="card" id="wrongListPanel" style="display:none; margin-top:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div class="label" style="margin:0;">모르는 문제 목록 <span class="badge" id="wrongCount">0</span></div>
+        <button style="width:auto; padding:6px 14px; font-size:13px;" class="ghost" id="clearWrongBtn">전체 해제</button>
+      </div>
+      <div class="muted" style="margin-bottom:8px;">문제를 클릭하면 정답이 펼쳐집니다.</div>
+      <div class="wrong-list" id="wrongList"></div>
     </div>
 
     <div style="margin-top:12px;">
@@ -259,6 +281,14 @@
   let timerId = null;
   let showAnswer = false;
 
+  // 모르는 문제 (localStorage 저장)
+  const STORAGE_KEY = 'quiz_wrong_set';
+  let wrongSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+  function saveWrongSet() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...wrongSet]));
+  }
+
+  let wrongListVisible = false;
   let autoNextTimeoutId = null;
 
   function clearAutoNext() {
@@ -356,8 +386,65 @@ render();
   }
 
   function toggleAnswer() {
-    showAnswer = !showAnswer; // 보기/숨기기 토글
+    showAnswer = !showAnswer;
     render();
+  }
+
+  function toggleWrong() {
+    if (wrongSet.has(currentIndex)) {
+      wrongSet.delete(currentIndex);
+    } else {
+      wrongSet.add(currentIndex);
+    }
+    saveWrongSet();
+    render();
+  }
+
+  function toggleWrongList() {
+    wrongListVisible = !wrongListVisible;
+    render();
+  }
+
+  function clearWrongList() {
+    wrongSet.clear();
+    saveWrongSet();
+    render();
+  }
+
+  function renderWrongList() {
+    const panel = $("wrongListPanel");
+    const list = $("wrongList");
+    const countEl = $("wrongCount");
+    const btn = $("showWrongListBtn");
+
+    countEl.textContent = wrongSet.size;
+    btn.textContent = wrongListVisible ? "목록 닫기" : `모르는 문제 목록 (${wrongSet.size})`;
+    panel.style.display = wrongListVisible ? "block" : "none";
+
+    if (!wrongListVisible) return;
+
+    const sorted = [...wrongSet].sort((a, b) => {
+      const qa = bank[a] ? bank[a].q : '';
+      const qb = bank[b] ? bank[b].q : '';
+      return qa.localeCompare(qb, 'ko');
+    });
+
+    list.innerHTML = '';
+    if (sorted.length === 0) {
+      list.innerHTML = '<div class="muted" style="padding:12px;">체크한 문제가 없습니다.</div>';
+      return;
+    }
+    sorted.forEach(idx => {
+      const item = bank[idx];
+      if (!item) return;
+      const div = document.createElement('div');
+      div.className = 'wrong-item';
+      div.innerHTML = '<div class="wrong-q"></div><div class="wrong-a"></div>';
+      div.querySelector('.wrong-q').textContent = item.q;
+      div.querySelector('.wrong-a').textContent = item.a;
+      div.addEventListener('click', () => div.classList.toggle('open'));
+      list.appendChild(div);
+    });
   }
 
   function render() {
@@ -380,12 +467,22 @@ render();
       : "";
 
     $("prevBtn").disabled = historyPos <= 0;
+
+    const markBtn = $("markWrongBtn");
+    const isMarked = wrongSet.has(currentIndex);
+    markBtn.textContent = isMarked ? "체크 해제" : "모르는 문제";
+    markBtn.className = isMarked ? "danger active" : "danger";
+
+    renderWrongList();
   }
 
   $("prevBtn").addEventListener("click", drawPrev);
   $("nextBtn").addEventListener("click", drawNext);
   $("restartBtn").addEventListener("click", restartTimerOnly);
   $("showAnswerBtn").addEventListener("click", toggleAnswer);
+  $("markWrongBtn").addEventListener("click", toggleWrong);
+  $("showWrongListBtn").addEventListener("click", toggleWrongList);
+  $("clearWrongBtn").addEventListener("click", clearWrongList);
 
   // 초기 시작
   resetDeck(true);
