@@ -20,6 +20,7 @@
     button { width:100%; padding: 14px 14px; border-radius: 12px; border:0; font-size: 16px; font-weight: 800; }
     .primary { background:#111; color:#fff; }
     .ghost { background:#fff; color:#111; border:1px solid #d8dde6; margin-top: 10px; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
     .row { display:flex; gap:10px; }
     .row button { width: 50%; }
     @media (max-width: 480px) { .row { flex-direction: column; } .row button { width:100%; } }
@@ -49,7 +50,10 @@
     </div>
 
     <div class="row">
+      <button class="ghost" id="prevBtn" disabled>이전 문제</button>
       <button class="primary" id="nextBtn">다음 문제</button>
+    </div>
+    <div class="row">
       <button class="ghost" id="showAnswerBtn">정답보기</button>
       <button class="ghost" id="restartBtn">타이머만 리셋</button>
     </div>
@@ -247,6 +251,8 @@
 
   let deck = [];
   let deckPos = 0;
+  let history = []; // 방문한 문제 인덱스 기록
+  let historyPos = -1; // 현재 history 내 위치
 
   let currentIndex = 0;
   let remaining = TOTAL;
@@ -319,6 +325,25 @@ render();
 
     if (deckPos >= deck.length) resetDeck(true); // 한 바퀴 끝나면 다시 섞기
     currentIndex = deck[deckPos++];
+
+    // history에서 중간에 있었다면 이후 기록 잘라내고 새로 추가
+    history = history.slice(0, historyPos + 1);
+    history.push(currentIndex);
+    historyPos = history.length - 1;
+
+    showAnswer = false;
+    remaining = TOTAL;
+    render();
+    startTimer();
+  }
+
+  function drawPrev() {
+    if (historyPos <= 0) return;
+    stopTimer();
+    clearAutoNext();
+
+    historyPos--;
+    currentIndex = history[historyPos];
     showAnswer = false;
     remaining = TOTAL;
     render();
@@ -353,8 +378,11 @@ render();
     $("cycleInfo").textContent = total
       ? `이번 바퀴 남은 문제: ${left} / ${total}`
       : "";
+
+    $("prevBtn").disabled = historyPos <= 0;
   }
 
+  $("prevBtn").addEventListener("click", drawPrev);
   $("nextBtn").addEventListener("click", drawNext);
   $("restartBtn").addEventListener("click", restartTimerOnly);
   $("showAnswerBtn").addEventListener("click", toggleAnswer);
