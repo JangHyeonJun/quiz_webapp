@@ -108,6 +108,11 @@
   </div>
 
 <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+<script>
 (() => {
   const TOTAL = 60;
 
