@@ -12,7 +12,15 @@
     body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background:#f6f7f9; }
     .wrap { max-width: 760px; margin: 0 auto; padding: 16px; }
     .card { background:#fff; border-radius: 14px; padding: 16px; box-shadow: 0 6px 20px rgba(0,0,0,.06); margin-bottom: 12px; }
+    .timer-wrap { position: relative; }
     .timer { font-size: 42px; font-weight: 800; text-align:center; margin: 6px 0 12px; }
+    .timer-reset { position: absolute; top: 0; right: 0; width: auto; padding: 6px 10px; font-size: 20px; border-radius: 10px; background: #f0f1f3; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .timer-reset:hover { background: #e0e2e6; }
+    .timer-reset span { font-size: 12px; font-weight: 700; color: #667; }
+    .answer-wrap { position: relative; }
+    .answer-toggle { position: absolute; top: 0; right: 0; width: auto; padding: 6px 10px; font-size: 18px; border-radius: 10px; background: #f0f1f3; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .answer-toggle:hover { background: #e0e2e6; }
+    .answer-toggle span { font-size: 12px; font-weight: 700; color: #667; }
     .bar { height: 10px; background:#e9edf2; border-radius: 999px; overflow:hidden; }
     .bar > div { height: 100%; width: 100%; background:#111; transition: width .15s linear; }
     h1 { font-size: 18px; margin: 0 0 12px; }
@@ -23,16 +31,18 @@
     button { width:100%; padding: 14px 14px; border-radius: 12px; border:0; font-size: 16px; font-weight: 800; }
     .primary { background:#111; color:#fff; }
     .ghost { background:#fff; color:#111; border:1px solid #d8dde6; margin-top: 10px; }
-    .danger { background:#fff; color:#e53e3e; border:1px solid #e53e3e; margin-top: 10px; }
+    .danger { background:#fff; color:#e53e3e; border:1px solid #e53e3e; margin-top: 0; }
     .danger.active { background:#e53e3e; color:#fff; }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .sub-row { display: flex; gap: 8px; margin-top: 8px; }
+    .sub-row button { width: 50%; padding: 10px; font-size: 13px; font-weight: 700; margin-top: 0; }
     .wrong-list { max-height: 400px; overflow-y: auto; }
     .wrong-item { padding: 12px; border-bottom: 1px solid #e9edf2; cursor: pointer; }
     .wrong-item:hover { background: #f0f1f3; }
-    .wrong-item .wrong-q { font-weight: 700; margin-bottom: 4px; }
-    .wrong-item .wrong-a { font-size: 14px; color: #667; white-space: pre-wrap; display: none; }
+    .wrong-item .wrong-q { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
+    .wrong-item .wrong-a { font-size: 13px; color: #667; white-space: pre-wrap; display: none; }
     .wrong-item.open .wrong-a { display: block; margin-top: 6px; }
-    .badge { display: inline-block; background: #e53e3e; color: #fff; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 2px 8px; margin-left: 6px; }
+    .badge { display: inline-block; background: #e53e3e; color: #fff; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 1px 7px; margin-left: 4px; }
     .row { display:flex; gap:10px; }
     .row button { width: 50%; }
     @media (max-width: 480px) { .row { flex-direction: column; } .row button { width:100%; } }
@@ -42,7 +52,10 @@
   <div class="wrap">
     <div class="card">
       <h1>공부 퀴즈 (60초 / 1문제)</h1>
-      <div class="timer" id="timer">60</div>
+      <div class="timer-wrap">
+        <div class="timer" id="timer">60</div>
+        <button class="timer-reset" id="restartBtn" title="타이머 리셋">&#x1F504;<span>리셋</span></button>
+      </div>
       <div class="bar"><div id="bar"></div></div>
       <div class="muted" id="cycleInfo" style="margin-top:10px;"></div>
     </div>
@@ -51,13 +64,12 @@
       <div class="label">문제</div>
       <div class="q" id="question">로딩중…</div>
 
-      <div id="answerBox" style="display:none; margin-top:14px;">
+      <div class="answer-wrap" style="margin-top:14px;">
         <div class="label">정답</div>
-        <div class="a" id="answer"></div>
-      </div>
-
-      <div class="muted" id="hint" style="margin-top:14px;">
-        60초가 끝나면 정답이 표시됩니다. (타이머 중에도 ‘다음 문제’ 가능)
+        <button class="answer-toggle" id="showAnswerBtn" title="정답보기">&#x1F441;<span id="answerToggleLabel">보기</span></button>
+        <div id="answerBox" style="display:none; margin-top:4px;">
+          <div class="a" id="answer"></div>
+        </div>
       </div>
     </div>
 
@@ -65,21 +77,19 @@
       <button class="ghost" id="prevBtn" disabled>이전 문제</button>
       <button class="primary" id="nextBtn">다음 문제</button>
     </div>
-    <div class="row">
-      <button class="ghost" id="showAnswerBtn">정답보기</button>
+    <div class="sub-row">
       <button class="danger" id="markWrongBtn">모르는 문제</button>
     </div>
-    <div class="row">
-      <button class="ghost" id="restartBtn">타이머만 리셋</button>
-      <button class="ghost" id="showWrongListBtn">모르는 문제 목록</button>
+    <div class="sub-row">
+      <button class="ghost" id="showWrongListBtn">모르는 문제 목록 (0)</button>
     </div>
 
-    <div class="card" id="wrongListPanel" style="display:none; margin-top:12px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <div class="label" style="margin:0;">모르는 문제 목록 <span class="badge" id="wrongCount">0</span></div>
-        <button style="width:auto; padding:6px 14px; font-size:13px;" class="ghost" id="clearWrongBtn">전체 해제</button>
+    <div class="card" id="wrongListPanel" style="display:none; margin-top:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div class="label" style="margin:0; font-size:14px;">모르는 문제 <span class="badge" id="wrongCount">0</span></div>
+        <button style="width:auto; padding:4px 12px; font-size:12px;" class="ghost" id="clearWrongBtn">전체 해제</button>
       </div>
-      <div class="muted" style="margin-bottom:8px;">문제를 클릭하면 정답이 펼쳐집니다.</div>
+      <div class="muted" style="margin-bottom:6px;">문제를 클릭하면 정답이 펼쳐집니다.</div>
       <div class="wrong-list" id="wrongList"></div>
     </div>
 
@@ -460,9 +470,8 @@ render();
     const item = bank[currentIndex] || { q: "문제가 없습니다.", a: "" };
     $("question").textContent = item.q;
 
-    $("showAnswerBtn").textContent = showAnswer ? "정답숨기기" : "정답보기";
     $("answerBox").style.display = showAnswer ? "block" : "none";
-    $("hint").style.display = showAnswer ? "none" : "block";
+    $("answerToggleLabel").textContent = showAnswer ? "숨기기" : "보기";
     $("answer").textContent = item.a;
 
     const total = bank.length;
