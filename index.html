@@ -401,17 +401,20 @@ render();
     }
     saveWrongSet();
     render();
+    if (wrongListVisible) renderWrongList();
   }
 
   function toggleWrongList() {
     wrongListVisible = !wrongListVisible;
     render();
+    renderWrongList();
   }
 
   function clearWrongList() {
     wrongSet.clear();
     saveWrongSet();
     render();
+    renderWrongList();
   }
 
   function renderWrongList() {
@@ -476,7 +479,9 @@ render();
     markBtn.textContent = isMarked ? "체크 해제" : "모르는 문제";
     markBtn.className = isMarked ? "danger active" : "danger";
 
-    renderWrongList();
+    // 목록 버튼의 개수 표시만 갱신 (목록 자체는 다시 그리지 않음)
+    $("showWrongListBtn").textContent = wrongListVisible ? "목록 닫기" : `모르는 문제 목록 (${wrongSet.size})`;
+    $("wrongCount").textContent = wrongSet.size;
   }
 
   $("prevBtn").addEventListener("click", drawPrev);
