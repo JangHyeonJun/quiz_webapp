@@ -54,6 +54,19 @@
       <button class="ghost" id="restartBtn">타이머만 리셋</button>
     </div>
 
+    <div style="margin-top:12px;">
+      <div class="muted" style="margin-bottom:6px;">정답 표시 후 자동 다음(초)</div>
+      <label style="margin-right:14px;">
+        <input type="radio" name="autoNext" value="10" checked> 10초
+      </label>
+      <label style="margin-right:14px;">
+        <input type="radio" name="autoNext" value="20"> 20초
+      </label>
+      <label>
+        <input type="radio" name="autoNext" value="30"> 30초
+      </label>
+    </div>
+
   </div>
 
 <script>
@@ -342,19 +355,6 @@ render();
       : "";
   }
 
-  <div style="margin-top:12px;">
-  <div class="muted" style="margin-bottom:6px;">정답 표시 후 자동 다음(초)</div>
-  <label style="margin-right:14px;">
-    <input type="radio" name="autoNext" value="10" checked> 10초
-  </label>
-  <label style="margin-right:14px;">
-    <input type="radio" name="autoNext" value="20"> 20초
-  </label>
-    <label>
-      <input type="radio" name="autoNext" value="30"> 30초
-    </label>
-  </div>
-  
   $("nextBtn").addEventListener("click", drawNext);
   $("restartBtn").addEventListener("click", restartTimerOnly);
   $("showAnswerBtn").addEventListener("click", toggleAnswer);
