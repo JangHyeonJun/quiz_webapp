@@ -105,8 +105,6 @@
       </label>
     </div>
 
-    <canvas id="pixelArt" width="200" height="120" style="display:block; margin:24px auto 8px; image-rendering:pixelated;"></canvas>
-
   </div>
 
 <script>
@@ -510,95 +508,6 @@ render();
   // 초기 시작
   resetDeck(true);
   drawNext();
-
-  // 픽셀 아트: 푸들 + 오리 + 하트
-  (function drawPixelArt() {
-    const canvas = document.getElementById('pixelArt');
-    const ctx = canvas.getContext('2d');
-    const s = 4; // 픽셀 크기
-
-    function px(x, y, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(x * s, y * s, s, s);
-    }
-
-    function drawSprite(ox, oy, sprite, palette) {
-      for (let y = 0; y < sprite.length; y++) {
-        for (let x = 0; x < sprite[y].length; x++) {
-          const c = sprite[y][x];
-          if (c !== '.') px(ox + x, oy + y, palette[c]);
-        }
-      }
-    }
-
-    // 비숑 얼굴 (귀 + 테두리)
-    const poodle = [
-      '.b..bbbbb..b.',
-      'bb.bwwwwwb.bb',
-      'bwbbwwwwwbbwb',
-      'bwwbwwwwwbwwb',
-      '.bwwwwwwwwwb.',
-      '.bwwewwwewwb.',
-      '.bwwwwwwwwwb.',
-      '.bwwwwnwwwwb.',
-      '..bwwwmwwwb..',
-      '..bwwwwwwwb..',
-      '...bwwwwwb...',
-      '....bbbbb....',
-    ];
-    const poodlePal = { w: '#FFFDF5', e: '#333', n: '#333', m: '#FF9999', b: '#E8DCC8' };
-
-    // 오리 (노란색)
-    const duck = [
-      '..yyy..',
-      '.yyyyy.',
-      '.yeye..',
-      '.yyyy..',
-      '.yooo..',
-      '..yyy..',
-      '.yyyyy.',
-      'yyyyyyy',
-      '.yyyyy.',
-      '..y.y..',
-      '.oo.oo.',
-      '..o.o..',
-    ];
-    const duckPal = { y: '#FFD966', e: '#333', o: '#FF8C00' };
-
-    // 하트 (빨간색, 두 캐릭터 사이 위에)
-    const heart = [
-      '.r.r.',
-      'rrrrr',
-      'rrrrr',
-      '.rrr.',
-      '..r..',
-    ];
-    const heartPal = { r: '#e53e3e' };
-
-    // 작은 하트들 (흩뿌리기)
-    const miniHeart = [
-      'r.r',
-      'rrr',
-      '.r.',
-    ];
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 푸들 (왼쪽)
-    drawSprite(5, 14, poodle, poodlePal);
-
-    // 오리 (오른쪽)
-    drawSprite(38, 14, duck, duckPal);
-
-    // 메인 하트 (가운데 위)
-    drawSprite(22, 5, heart, heartPal);
-
-    // 작은 하트들
-    drawSprite(17, 2, miniHeart, heartPal);
-    drawSprite(29, 1, miniHeart, heartPal);
-    drawSprite(15, 10, miniHeart, heartPal);
-    drawSprite(32, 9, miniHeart, heartPal);
-  })();
 
 })();
 </script>
