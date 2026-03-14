@@ -397,18 +397,19 @@ render();
   function drawNext() {
     if (!bank.length) return;
 
-    // ✅ 타이머 남아도 다음 가능: 다음 눌렀을 때 타이머 즉시 리셋
-    // (그래서 여기서 stopTimer() 먼저)
     stopTimer();
-    clearAutoNext(); // ✅ 자동 다음 예약 취소
+    clearAutoNext();
 
-    if (deckPos >= deck.length) resetDeck(true); // 한 바퀴 끝나면 다시 섞기
-    currentIndex = deck[deckPos++];
-
-    // history에서 중간에 있었다면 이후 기록 잘라내고 새로 추가
-    history = history.slice(0, historyPos + 1);
-    history.push(currentIndex);
-    historyPos = history.length - 1;
+    // history에 앞으로 갈 기록이 있으면 그걸 사용 (이전→다음 시 같은 문제 유지)
+    if (historyPos < history.length - 1) {
+      historyPos++;
+      currentIndex = history[historyPos];
+    } else {
+      if (deckPos >= deck.length) resetDeck(true);
+      currentIndex = deck[deckPos++];
+      history.push(currentIndex);
+      historyPos = history.length - 1;
+    }
 
     showAnswer = false;
     remaining = TOTAL;
