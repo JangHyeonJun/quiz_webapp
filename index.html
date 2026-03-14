@@ -44,7 +44,7 @@
     .badge { display: inline-block; background: #e53e3e; color: #fff; font-size: 11px; font-weight: 800; border-radius: 999px; padding: 1px 7px; margin-left: 4px; }
     .row { display:flex; gap:10px; margin-top:10px; }
     .row button { width: 50%; }
-    @media (max-width: 480px) { .row { flex-direction: column; } .row button { width:100%; } }
+    @media (max-width: 480px) { .row { flex-direction: column; } .row button { width:100%; } .row.row-nowrap { flex-direction: row; } .row.row-nowrap button { width:50%; } }
   </style>
 </head>
 <body>
@@ -78,7 +78,7 @@
       <button class="ghost" id="prevBtn" disabled>이전 문제</button>
       <button class="primary" id="nextBtn">다음 문제</button>
     </div>
-    <div class="row">
+    <div class="row row-nowrap">
       <button class="danger" id="markWrongBtn" style="padding:9px 14px;">모르는 문제</button>
       <button class="ghost" id="showWrongListBtn" style="padding:9px 14px;">목록 (0)</button>
     </div>
